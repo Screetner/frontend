@@ -1,10 +1,13 @@
+"use client"
+
 import {ChevronFirst, ChevronLast, LogOut} from "lucide-react";
-import {signOut} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 import Image from "next/image";
 import logo from "../../../public/logo.jpg";
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {path, routeList} from "@/app/utils/routeList";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
+import RequireAuth from "@/app/components/auth/RequireAuth";
 
 interface SidebarContextType {
     expanded: boolean;
@@ -21,6 +24,7 @@ interface SidebarProps {
 function Sidebar({children}: SidebarProps) {
     const [expanded, setExpanded] = useState<boolean>(true);
 
+
     useEffect(() => {
         const handleResize = () => {
             const isLg = window.innerWidth <= 1023;
@@ -34,7 +38,6 @@ function Sidebar({children}: SidebarProps) {
             window.removeEventListener("resize", handleResize);
         };
     }, []);
-
 
     return (
         <>
@@ -108,39 +111,52 @@ function SidebarItem({
     const handleOnClick = () => {
         router.push(to)
     }
+    const path = usePathname()
+
+    if (path === to) {
+        active = true
+    }
 
     return (
         <li
             className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${active ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800" : "hover:bg-indigo-50 text-gray-600"}`}
             onClick={handleOnClick}
         >
-                {icon}
+            {icon}
             <span
                 className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"}`}
             >
                 {text}
             </span>
             {!expanded && (
-                <div className={`absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}>
+                <div
+                    className={`absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}>
                     {text}
                 </div>
             )}
         </li>);
 }
 
-export function Layout({children, activePath}: { children: ReactNode, activePath: path}) {
+export function Layout({children}: { children: ReactNode }) {
+    const path = usePathname()
+    const avoidLayout = ["/sign-in"]
+
     return (
-        <div className="flex">
-            <Sidebar>
-                {
-                    routeList.map(r => {
-                        return <SidebarItem key={r.label} icon={r.icon} text={r.label} active={r.path === activePath} to={r.path}/>
-                    })
-                }
-            </Sidebar>
-            <div className={"w-full"}>
-                {children}
-            </div>
-        </div>
+        avoidLayout.includes(path) ? children : (
+            <RequireAuth>
+                <div className="flex">
+                    <Sidebar>
+                        {
+                            routeList.map(r => {
+                                return <SidebarItem key={r.label} icon={r.icon} text={r.label} to={r.path}/>
+                            })
+                        }
+                    </Sidebar>
+                    <div className={"w-full"}>
+                        {children}
+                    </div>
+                </div>
+            </RequireAuth>
+        )
     )
 }
