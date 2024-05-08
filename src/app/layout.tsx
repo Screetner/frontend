@@ -3,7 +3,6 @@ import "./globals.css";
 import React from "react";
 import { NextAuthProvider } from "@/app/providers/NextAuthProvider";
 import { Layout } from "@/app/components/SideBar";
-import { usePathname } from "next/navigation";
 import {Metadata} from "next";
 
 const inter = Inter({ subsets: ["latin"] });
