@@ -1,9 +1,12 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import React from "react";
-import { NextAuthProvider } from "@/app/providers/NextAuthProvider";
-import { Layout } from "@/app/components/SideBar";
+import { Layout } from "@/components/SideBar";
 import {Metadata} from "next";
+
+// provider
+import { QueryProvider } from "@/providers/QueryProvider";
+import { NextAuthProvider } from "@/providers/NextAuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,11 +23,13 @@ export default function RootLayout({
 
     return (
         <NextAuthProvider>
-            <html lang="en">
-            <body className={inter.className}>
+            <QueryProvider>
+                <html lang="en">
+                <body className={inter.className}>
                 <Layout>{children}</Layout>
-            </body>
-            </html>
+                </body>
+                </html>
+            </QueryProvider>
         </NextAuthProvider>
     );
 }

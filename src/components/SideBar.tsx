@@ -3,11 +3,11 @@
 import {ChevronFirst, ChevronLast, LogOut} from "lucide-react";
 import {signOut, useSession} from "next-auth/react";
 import Image from "next/image";
-import logo from "../../../public/logo.jpg";
+import logo from "../../public/logo.jpg";
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {path, routeList} from "@/app/utils/routeList";
 import {usePathname, useRouter} from "next/navigation";
-import RequireAuth from "@/app/components/auth/RequireAuth";
+import RequireAuth from "@/components/auth/RequireAuth";
 
 interface SidebarContextType {
     expanded: boolean;
